@@ -1,10 +1,8 @@
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
+source utils.sh
 
 # check and install pipx
-if ! command -v pipx &>/dev/null; then
-    echo "Installing pipx"
+if ! command_exists pipx; then
+    print "Installing pipx"
     brew install pipx
-    echo "pipx installed"
+    print "pipx installed"
 fi

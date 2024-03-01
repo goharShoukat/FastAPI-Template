@@ -1,4 +1,4 @@
-source utils.sh
+source bin/utils.sh
 
 condaEnv=$(echo $CONDA_DEFAULT_ENV)
 if [ ! -z $condaEnv ]; then

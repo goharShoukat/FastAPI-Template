@@ -1,7 +1,10 @@
-source utils.sh
+source bin/utils.sh
+source bin/os_detection.sh
+
+os=$(get_os)
 
 # check if brew is installed
-if ! command -v brew &>/dev/null; then
+if ! command_exists brew && [ $os=='OSX' ]; then
     pretty_print "Installing Homebrew, an OSX package manager, follow the instructions..."
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 

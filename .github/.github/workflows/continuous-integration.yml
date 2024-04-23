@@ -1,0 +1,32 @@
+name: Continuous Integration
+run-name: ${{ github.actor }} is attempting to integrate their masterpiece 🤞
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🔎 Running integration for ${{ github.ref }}"
+      - name: Checkout repository code 🚪
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9.13"
+          cache: poetry
+      - name: Install Dependencies
+        run: poetry install
+      - name: Type checking 👮🏾‍♂️
+        run: poetry run mypy .
+      - name: Lint with black
+        run: poetry run black .
+      - name: Run tests
+        run: poetry run pytest
+      - name: Status 🤔
+        run: echo "This job's status is ${{ job.status }} ✅"

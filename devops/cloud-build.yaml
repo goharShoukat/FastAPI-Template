@@ -1,0 +1,50 @@
+steps:
+  # Build the container image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "--build-arg",
+        "_PIP_DISABLE_PIP_VERSION_CHECK=$_PIP_DISABLE_PIP_VERSION_CHECK",
+        "--build-arg",
+        "_PIP_DEFAULT_TIMEOUT=$_PIP_DEFAULT_TIMEOUT",
+        "--build-arg",
+        "_POETRY_HOME=$_POETRY_HOME",
+        "--build-arg",
+        "_POETRY_VIRTUALENVS_IN_PROJECT=$_POETRY_VIRTUALENVS_IN_PROJECT",
+        "--build-arg",
+        "_POETRY_NO_INTERACTION=$_POETRY_NO_INTERACTION",
+        "--build-arg",
+        "_PYSETUP_PATH=$_PYSETUP_PATH",
+        "--build-arg",
+        "_VENV_PATH=$_VENV_PATH",
+        "--build-arg",
+        "_POETRY_VERSION=$_POETRY_VERSION",
+        "-t",
+        "${_IMAGE_URL}",
+        "-f",
+        "./devops/$_DOCKERFILE_NAME",
+        ".",
+      ]
+    id: "Build docker fast-api-template image"
+  # Push the container image to Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "${_IMAGE_URL}"]
+    id: "Push image to private registry"
+  # Deploy container image to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      [
+        "run",
+        "deploy",
+        "$_CLOUD_RUN_SERVICE_NAME",
+        "--image",
+        "${_IMAGE_URL}",
+        "--region",
+        "$_CLOUD_RUN_REGION",
+      ]
+    id: "Deploy container to cloud run"
+substitutions:
+  _IMAGE_URL: gcr.io/${PROJECT_ID}/fast-api-template/${_ENVIRONMENT}/${_CLOUD_RUN_SERVICE_NAME}:${COMMIT_SHA}
+images: ["${_IMAGE_URL}"]

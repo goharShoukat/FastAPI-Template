@@ -4,7 +4,6 @@ from typing import Callable, List
 from decouple import config
 from pydantic import AnyHttpUrl
 from pydantic_settings import BaseSettings
-
 from utils import configure_logging
 
 warnings.simplefilter(action="ignore", category=FutureWarning)

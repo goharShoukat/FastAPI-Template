@@ -1,7 +1,7 @@
 from .config import settings
 from .database import (
-    initialise_postgres_session,
-    initialise_postgres,
     PostgresSingleton,
+    initialise_postgres,
+    initialise_postgres_session,
 )
 from .lifespan_ import lifespan

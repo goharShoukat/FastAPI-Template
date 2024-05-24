@@ -26,7 +26,7 @@ jobs:
         run: poetry run mypy .
       - name: Lint with black
         run: poetry run black .
-      - name: Run tests
-        run: poetry run pytest
+      - name: Run tests and give coverage report
+        run: poetry run coverage run -m pytest && poetry run coverage report -m
       - name: Status 🤔
         run: echo "This job's status is ${{ job.status }} ✅"

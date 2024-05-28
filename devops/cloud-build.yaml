@@ -26,7 +26,7 @@ steps:
         "./devops/$_DOCKERFILE_NAME",
         ".",
       ]
-    id: "Build docker fast-api-template image"
+    id: "Build docker jim-risks-insights-api image"
   # Push the container image to Container Registry
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "${_IMAGE_URL}"]
@@ -38,7 +38,7 @@ steps:
       [
         "run",
         "deploy",
-        "$_CLOUD_RUN_SERVICE_NAME",
+        "$TRIGGER_NAME",
         "--image",
         "${_IMAGE_URL}",
         "--region",
@@ -46,5 +46,8 @@ steps:
       ]
     id: "Deploy container to cloud run"
 substitutions:
-  _IMAGE_URL: gcr.io/${PROJECT_ID}/fast-api-template/${_ENVIRONMENT}/${_CLOUD_RUN_SERVICE_NAME}:${COMMIT_SHA}
+  _IMAGE_URL: ${_CLOUD_RUN_REGION}-docker.pkg.dev/${PROJECT_ID}/${_APP_NAME}/${TRIGGER_NAME}:${COMMIT_SHA}
+  _APP_NAME: jim-risks-insights-api
 images: ["${_IMAGE_URL}"]
+options:
+  dynamic_substitutions: true

@@ -1,7 +1,6 @@
 import contextlib
 from typing import AsyncIterator, Optional
 
-from google.cloud.sql.connector import Connector
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncEngine,
@@ -20,7 +19,6 @@ class PostgresSingleton:
     _instance: Optional["PostgresSingleton"] = None
     _engine: Optional[AsyncEngine] = None
     _sessionmaker: Optional[async_sessionmaker] = None
-    _connector: Optional[Connector] = None
     _initialised: Optional[bool] = None
 
     def __new__(cls):
@@ -29,17 +27,7 @@ class PostgresSingleton:
             cls._instance._engine = None
             cls._instance._sessionmaker = None
             cls._instance._initialised = False
-            cls._instance._connector = Connector()
         return cls._instance
-
-    def _getconn(self):
-        return self._connector.connect_async(
-            settings.INSTANCE_CONNECTION_SOCKET,
-            "asyncpg",
-            user=settings.DB_USER,
-            password=settings.DB_PASSWORD,
-            db=settings.DB_NAME,
-        )
 
     async def init(self):
         if self._initialised:
@@ -47,7 +35,6 @@ class PostgresSingleton:
 
         self._engine = create_async_engine(
             "postgresql+asyncpg://",
-            async_creator=self._getconn,
             pool_pre_ping=True,
             pool_size=5,
             max_overflow=10,
@@ -61,7 +48,6 @@ class PostgresSingleton:
         await self._engine.dispose()
         self._engine = None
         self._sessionmaker = None
-        await self._connector.close_async()
 
     @contextlib.asynccontextmanager
     async def connect(self) -> AsyncIterator[AsyncConnection]:
@@ -86,7 +72,7 @@ class PostgresSingleton:
             await sess.commit()
         except Exception as e:
             await sess.rollback()
-            raise e
+            raise
         finally:
             await sess.close()
 

@@ -4,7 +4,6 @@ from fastapi import FastAPI
 from loguru import logger
 from sqlalchemy import text
 
-
 from .database.postgres import pg_sessionmanager
 
 

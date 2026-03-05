@@ -4,20 +4,11 @@ repos:
     hooks:
       - id: black
         name: black
-        entry: poetry run black
+        entry: black .
         language: system
         types: [file, python]
       - id: isort
         name: isort
-        entry: poetry run isort
+        entry: isort .
         language: system
         types: [file, python]
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: ""
-    hooks:
-      - id: mypy
-  - repo: https://github.com/hadialqattan/pycln
-    rev: v2.1.1
-    hooks:
-      - id: pycln
-        args: [--all]

@@ -4,7 +4,8 @@ from typing import Callable, List
 from decouple import config
 from pydantic import AnyHttpUrl
 from pydantic_settings import BaseSettings
-from utils import configure_logging
+
+from app.utils import configure_logging
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -15,8 +16,6 @@ class Settings(BaseSettings):
     WORKERS: int = config("WORKERS", cast=int)
     API_V1_STR: str = "/api"
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = config("ALLOWED_ORIGINS").split(",")
-
-    PROJECT_NAME: str = "CEROInsightsAPI"
 
     POSTGRES_URL: str = (
         "postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}".format(

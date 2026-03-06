@@ -1,20 +1,24 @@
-# from unittest import mock
+from unittest.mock import AsyncMock, MagicMock, patch
 
-# import pytest
+import pytest
 
 
-# @pytest.mark.asyncio
-# @mock.patch("core.lifespan_.settings")
-# @mock.patch("core.lifespan_.sessionmanager")
-# async def test_lifespan(mock_manager, mock_settings, test_app):
-#     from core import lifespan
+@pytest.mark.asyncio
+@patch("core.lifespan_.pg_sessionmanager")
+async def test_lifespan(mock_sess, test_app):
+    from core.lifespan_ import lifespan
 
-#     sess = mock_manager.return_value
-#     sess.init = mock.AsyncMock()
-#     sess.close = mock.AsyncMock()
+    # 1. Manually set methods to AsyncMock to allow 'await'
+    mock_sess.init = AsyncMock()
+    mock_sess.close = AsyncMock()
 
-#     async with lifespan(test_app):
-#         pass
+    # 2. Mock the 'async with connect()' context manager
+    # This prevents the "TypeError: 'AsyncMock' object does not support the context manager protocol"
+    mock_sess.connect.return_value.__aenter__ = AsyncMock()
+    mock_sess.connect.return_value.__aexit__ = AsyncMock()
 
-#     mock_manager.assert_called_once()
-#     sess.init.assert_called_once_with(mock_settings.POSTGRES_URL)
+    async with lifespan(test_app):
+        pass
+
+    mock_sess.init.assert_awaited_once()
+    mock_sess.close.assert_awaited_once()
